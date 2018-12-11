@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Augustwuli/searchFood-backend#readme",
   "dependencies": {
+    "env2": "^2.2.2",
     "hapi": "^16.7.0"
   }
 }
