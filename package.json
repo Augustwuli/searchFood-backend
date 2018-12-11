@@ -1,0 +1,25 @@
+{
+  "name": "searchfood-backend",
+  "version": "1.0.0",
+  "description": "毕设后台",
+  "main": "app.js",
+  "scripts": {
+    "test": "test project"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Augustwuli/searchFood-backend.git"
+  },
+  "keywords": [
+    "hapi"
+  ],
+  "author": "Augustwuli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Augustwuli/searchFood-backend/issues"
+  },
+  "homepage": "https://github.com/Augustwuli/searchFood-backend#readme",
+  "dependencies": {
+    "hapi": "^16.7.0"
+  }
+}
