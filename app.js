@@ -4,12 +4,14 @@ require('env2')('./.env');
 const config = require('./config');
 const hello = require('./routes/hello');
 const hapiAuthJWT2 = require('hapi-auth-jwt2');
+const rsa = require('./utils/node-rsa')
 const pluginHapiSwagger = require('./plugins/hapi-swagger');
 const pluginHapiPagination = require('./plugins/hapi-pagination');
 const pluginHapiAuthJWT2 = require('./plugins/hapi-auth-jwt2');
 const order = require('./routes/order');
 const notes = require('./routes/notes');
 const users = require('./routes/users');
+const codes = require('./routes/codes');
 
 const server = new Hapi.Server();
 // 配置服务器启动的 host 和端口
@@ -18,6 +20,7 @@ server.connection({
   port: config.port
 })
 const init = async () => {
+  await rsa.pem.savePem();
   await server.register([
     // 为系统使用 hapi-swagger
     ...pluginHapiSwagger,
@@ -31,6 +34,7 @@ const init = async () => {
     ...order,
     ...notes,
     ...users,
+    ...codes,
   ])
   await server.start();
   console.log(`Server running at: ${server.info.uri}`);

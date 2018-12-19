@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Augustwuli/searchFood-backend#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "env2": "^2.2.2",
     "hapi": "^16.7.0",
     "hapi-auth-jwt2": "^7.4.1",
@@ -29,6 +30,7 @@
     "joi": "^13.7.0",
     "jsonwebtoken": "^8.4.0",
     "mysql2": "^1.6.4",
+    "node-rsa": "^1.0.2",
     "package": "^1.0.1",
     "sequelize": "^4.41.2",
     "vision": "^4.1.1"

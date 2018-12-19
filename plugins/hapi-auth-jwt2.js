@@ -1,8 +1,9 @@
 const config = require('../config');
 
-const validate = (decode, request, callback) => {
+const validate = (decoded, request, callback) => {
   let error;
   const { userId } = decoded;
+
   if (!userId) {
     return callback(error, false, userId);
   }
