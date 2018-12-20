@@ -20,7 +20,7 @@ server.connection({
   port: config.port
 })
 const init = async () => {
-  await rsa.pem.savePem();
+  // await rsa.pem.savePem();
   await server.register([
     // 为系统使用 hapi-swagger
     ...pluginHapiSwagger,
