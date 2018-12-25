@@ -1,9 +1,11 @@
 // routes/users.js
 const JWT = require('jsonwebtoken');
-const Joi = require('joi')
-const crypto = require('crypto')
-const fs = require('fs')
-const models = require('../node_modules/.bin/models')
+const { jwtHeaderDefine } = require('../utils/router-header');
+const Joi = require('joi');
+const crypto = require('crypto');
+const fs = require('fs');
+const models = require('../node_modules/.bin/models');
+const Path = require('path');
 
 const GROUP_NAME = 'users';
 
@@ -79,6 +81,7 @@ module.exports = [
         };
         let pwd = user.get('password');
         let userId = user.get('id');
+        console.log(`it = ${userId}`);
         let privateKey = fs.readFileSync('./pem/private.pem', 'utf8');
         let buffer2 = Buffer.from(pwd, 'base64');
         let decrypted = crypto.privateDecrypt(
@@ -97,7 +100,7 @@ module.exports = [
       }).catch((err) => {
         reply(result);
         console.error('用户信息查询失败');
-        console.log(err)
+        console.log(err);
       })
     },
     config: {
@@ -111,6 +114,47 @@ module.exports = [
       description: '用于测试的登录用户',
       auth: false, // 约定此接口不参与 JWT 的用户验证，会结合下面的 hapi-auth-jwt 来使用
     },
+  },
+  {
+    method: 'GET',
+    path: `/${GROUP_NAME}/userInfo`,
+    handler: async (request, reply) => {
+      let result = {
+        success: false,
+        data: {
+          thumb_url: '',
+          signature: '',
+          gender: '',
+        }
+      };
+      let userId = request.auth.credentials.userId;
+      await models.users.findOne({
+        where: {
+          'id': userId
+        }
+      }).then((user) => {
+        result.success = true;
+        let thumb_url = user.get('thumb_url');
+        let signature = user.get('signature');
+        let gender = user.get('gender');
+        console.log(thumb_url,signature,gender);
+        result.data.thumb_url = thumb_url;
+        result.data.signature = signature;
+        result.data.gender = gender;
+        reply(result);
+      }).catch((err) => {
+        reply(result);
+        console.error('用户信息查询失败');
+        console.log(err);
+      })
+    },
+    config: {
+      validate: {
+        ...jwtHeaderDefine
+      },
+      tags: ['api', GROUP_NAME],
+      description: '用于测试的用户信息获取接口',
+    }
   },
   {
     method: 'POST',

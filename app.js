@@ -1,10 +1,10 @@
 // app.js
 const Hapi = require('hapi');
+const inert = require('inert');
 require('env2')('./.env');
 const config = require('./config');
 const hello = require('./routes/hello');
 const hapiAuthJWT2 = require('hapi-auth-jwt2');
-const rsa = require('./utils/node-rsa')
 const pluginHapiSwagger = require('./plugins/hapi-swagger');
 const pluginHapiPagination = require('./plugins/hapi-pagination');
 const pluginHapiAuthJWT2 = require('./plugins/hapi-auth-jwt2');
@@ -26,6 +26,7 @@ const init = async () => {
     ...pluginHapiSwagger,
     pluginHapiPagination,
     hapiAuthJWT2,
+    inert,
   ]);
   pluginHapiAuthJWT2(server);
   
