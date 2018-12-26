@@ -122,6 +122,7 @@ module.exports = [
       let result = {
         success: false,
         data: {
+          name: '',
           thumb_url: '',
           signature: '',
           gender: '',
@@ -135,10 +136,11 @@ module.exports = [
       }).then((user) => {
         result.success = true;
         let thumb_url = user.get('thumb_url');
+        let name = user.get('name');
         let signature = user.get('signature');
         let gender = user.get('gender');
-        console.log(thumb_url,signature,gender);
-        result.data.thumb_url = thumb_url;
+        result.data.name = name;
+        result.data.thumb_url = Path.join(__dirname, '../public/img/' + thumb_url);
         result.data.signature = signature;
         result.data.gender = gender;
         reply(result);
@@ -154,6 +156,52 @@ module.exports = [
       },
       tags: ['api', GROUP_NAME],
       description: '用于测试的用户信息获取接口',
+    }
+  },
+  {
+    method: 'POST',
+    path: `/${GROUP_NAME}/save`,
+    handler: async (request, reply) => {
+      const { name, gender, signature } = request.payload;
+      let userId = request.auth.credentials.userId;
+      let result = {
+        success: false,
+        data: {
+            name: '',
+            gender: '',
+            signature: ''
+        }
+      }
+      await models.users.update(
+        {
+          name: name,
+          gender: gender,
+          signature: signature,
+        },
+        {
+          where: {
+            id: userId
+          }
+        }
+        ,
+      ).then((row) => {
+        result.success = true;
+        result.data.name = name;
+        result.data.gender = gender;
+        result.data.signature = signature;
+        reply(result);
+      }).catch((err) => {
+        reply(result);
+        console.error('用户信息更新失败');
+        console.log(err);
+      })
+    },
+    config: {
+      validate: {
+        ...jwtHeaderDefine
+      },
+      tags: ['api', GROUP_NAME],
+      description: '用于测试的用户信息保存接口',
     }
   },
   {
