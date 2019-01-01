@@ -162,14 +162,27 @@ module.exports = [
     method: 'POST',
     path: `/${GROUP_NAME}/save`,
     handler: async (request, reply) => {
-      const { name, gender, signature } = request.payload;
+      const { name, gender, signature, avatar } = request.payload;
+      console.log('avatar');
+      let path = 'public/resources/header/'+ Date.now() +'.jpg';
+      let base64 = avatar.replace(/^data:image\/\w+;base64,/, "");
+      let dataBuffer = new Buffer(base64, 'base64');
+      console.log('dataBuffer是否是Buffer对象：'+Buffer.isBuffer(dataBuffer));
+      fs.writeFile(path,dataBuffer,function(err){
+        if(err){
+            console.log(err);
+        }else{
+           console.log('写入成功！');
+        }
+      })
       let userId = request.auth.credentials.userId;
       let result = {
         success: false,
         data: {
             name: '',
             gender: '',
-            signature: ''
+            signature: '',
+            avatar: ''
         }
       }
       await models.users.update(
@@ -177,6 +190,7 @@ module.exports = [
           name: name,
           gender: gender,
           signature: signature,
+          thumb_url: path
         },
         {
           where: {
@@ -189,6 +203,7 @@ module.exports = [
         result.data.name = name;
         result.data.gender = gender;
         result.data.signature = signature;
+        result.data.avatar = path;
         reply(result);
       }).catch((err) => {
         reply(result);
