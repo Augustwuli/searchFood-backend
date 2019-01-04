@@ -12,7 +12,7 @@ const order = require('./routes/order');
 const notes = require('./routes/notes');
 const users = require('./routes/users');
 const codes = require('./routes/codes');
-const imgs = require('./routes/imgs')
+const statics = require('./routes/statics');
 
 const server = new Hapi.Server();
 // 配置服务器启动的 host 和端口
@@ -37,7 +37,7 @@ const init = async () => {
     ...notes,
     ...users,
     ...codes,
-    ...imgs,
+    ...statics
   ])
   await server.start();
   console.log(`Server running at: ${server.info.uri}`);

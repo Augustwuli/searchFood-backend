@@ -140,7 +140,7 @@ module.exports = [
         let signature = user.get('signature');
         let gender = user.get('gender');
         result.data.name = name;
-        result.data.thumb_url = Path.join(__dirname, '../public/img/' + thumb_url);
+        result.data.thumb_url = thumb_url;
         result.data.signature = signature;
         result.data.gender = gender;
         reply(result);
@@ -196,8 +196,7 @@ module.exports = [
           where: {
             id: userId
           }
-        }
-        ,
+        },
       ).then((row) => {
         result.success = true;
         result.data.name = name;
