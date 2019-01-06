@@ -6,12 +6,25 @@ module.exports = [
     method: 'GET',
     path: `/${GROUP_NAME}`,
     handler: async (request, reply) => {
+      let result = {
+        success: false,
+        data: {
+          labels: []
+        },
+        statu: 0
+      };
       await models.labels.findAll({
         attributes: [
-          'id', 'name', 'num'
+          'id', 'name', 'num',
       ],
       }).then((labels) => {
-        reply(labels);
+        result.success = true;
+        result.data.labels = labels;
+        reply(result);
+      }).catch((err) => {
+        reply(result);
+        console.error('标签查询失败');
+        console.log(err)
       })
     },
     config: {
