@@ -28,5 +28,22 @@ module.exports = [
         tags: ['api', GROUP_NAME],
         description: '获取笔记列表',
     }
+  },
+  {
+    method: 'POST',
+    path: `/${GROUP_NAME}/publish`,
+    handler: async (request, reply) => {
+      const { title, content, thumb_url, labels } = request.payload;
+      let userId = request.auth.credentials.userId;
+      let result = {
+        success: false,
+        data: {
+          title: '',
+          content: '',
+          thumb_url: '',
+          labels: ''
+        }
+      }
+    }
   }
 ]

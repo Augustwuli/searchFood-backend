@@ -19,7 +19,6 @@ module.exports = [
         success: false,
         statu: 0
       };
-
       await models.users.findOrCreate({
         where: { phone: phone },
         defaults: {
