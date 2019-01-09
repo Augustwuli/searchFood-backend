@@ -172,5 +172,43 @@ module.exports = [
       description: '查找笔记内容',
       auth: false
     }
+  },
+  {
+    method: 'POST',
+    path: `/${GROUP_NAME}/read`,
+    handler: async (request, reply) => {
+      let result = {
+        success: false,
+        statu: 0
+      };
+      let { noteId, read_num } = request.payload;
+      read_num++;
+      await models.notes.update(
+        {
+          read_num: read_num 
+        },
+        {
+          where: {
+            id: noteId
+          }
+        }).then((row) => {
+          result.success = true;
+        }).catch((err) => {
+          console.log('笔记阅读量更新失败')
+          console.log(err)
+        })
+      reply(result);
+    },
+    config: {
+      validate :{
+        payload: {
+          noteId: Joi.number().integer().required(),
+          read_num: Joi.number().integer().required()
+        }
+      },
+      tags: ['api', GROUP_NAME],
+      description: '增加笔记阅读量',
+      auth: false
+    },
   }
 ]

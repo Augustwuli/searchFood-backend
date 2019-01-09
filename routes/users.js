@@ -25,6 +25,9 @@ module.exports = [
           name: name,
           phone: phone,
           password: password,
+          thumb_url: 'public/resources/header/1546348983062.jpg',
+          gender: '男',
+          signature: ''
         }
       }).spread((user, created) => {
         // 如果数据库插入成功的话就返回1 否则返回0 
@@ -162,18 +165,25 @@ module.exports = [
     path: `/${GROUP_NAME}/save`,
     handler: async (request, reply) => {
       const { name, gender, signature, avatar } = request.payload;
-      console.log('avatar');
-      let path = 'public/resources/header/'+ Date.now() +'.jpg';
-      let base64 = avatar.replace(/^data:image\/\w+;base64,/, "");
-      let dataBuffer = new Buffer(base64, 'base64');
-      console.log('dataBuffer是否是Buffer对象：'+Buffer.isBuffer(dataBuffer));
-      fs.writeFile(path,dataBuffer,function(err){
-        if(err){
-            console.log(err);
-        }else{
-           console.log('写入成功！');
-        }
-      })
+      let data = {
+        name: name,
+        gender: gender,
+        signature: signature
+      }
+      if(avatar !== ''){
+        let path = 'public/resources/header/'+ Date.now() +'.jpg';
+        let base64 = avatar.replace(/^data:image\/\w+;base64,/, "");
+        let dataBuffer = new Buffer(base64, 'base64');
+        console.log('dataBuffer是否是Buffer对象：'+Buffer.isBuffer(dataBuffer));
+        fs.writeFile(path,dataBuffer,function(err){
+          if(err){
+              console.log(err);
+          }else{
+             console.log('写入成功！');
+          }
+        })
+        data.thumb_url = path;
+      }
       let userId = request.auth.credentials.userId;
       let result = {
         success: false,
@@ -185,12 +195,7 @@ module.exports = [
         }
       }
       await models.users.update(
-        {
-          name: name,
-          gender: gender,
-          signature: signature,
-          thumb_url: path
-        },
+        data,
         {
           where: {
             id: userId
@@ -201,13 +206,12 @@ module.exports = [
         result.data.name = name;
         result.data.gender = gender;
         result.data.signature = signature;
-        result.data.avatar = path;
-        reply(result);
+        result.data.avatar = avatar===''? '': path;
       }).catch((err) => {
-        reply(result);
         console.error('用户信息更新失败');
         console.log(err);
       })
+      reply(result);
     },
     config: {
       validate: {
