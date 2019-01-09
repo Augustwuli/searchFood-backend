@@ -118,9 +118,14 @@ module.exports = [
     handler: async (request, reply) => {
       let result = {
         success: false,
-        data: {},
+        data: {
+          img_lists: [],
+          auth_info: {},
+          detail:{}
+        },
         statu: 0
       };
+      let auth_id = '';
       const { noteId } = request.params;
       await models.notes.findOne({
         where: {
@@ -128,11 +133,31 @@ module.exports = [
         }
       }).then((note) => {
         result.success = true;
-        result.data.id = note.get('id');
-        result.data.title = note.get('title');
-        result.data.labels = note.get('labels');
+        let imgs = note.get('imgs');
+        if(imgs !== ''){
+          result.data.img_lists = imgs.split(',');
+        }
+        auth_id = note.get('auth_id');
+        result.data.detail.title = note.get('title');
+        result.data.detail.labels = note.get('labels');
+        result.data.detail.read_num = note.get('read_num');
+        result.data.detail.content = note.get('content');
+        result.data.detail.star_num = note.get('star_num');
+        result.data.detail.comment_num = note.get('comment');
       }).catch((err) => {
         console.log('笔记内容查找失败');
+        console.log(err);
+      })
+      await models.users.findOne({
+        where: {
+          'id': auth_id
+        }
+      }).then((user) => {
+        result.data.auth_info.name = user.get('name');
+        result.data.auth_info.thumb_url = user.get('thumb_url');
+        result.data.auth_info.fans = 20;
+      }).catch((err) => {
+        console.log('作者信息查询失败');
         console.log(err);
       })
       reply(result);
