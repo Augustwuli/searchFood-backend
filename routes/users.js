@@ -170,8 +170,9 @@ module.exports = [
         gender: gender,
         signature: signature
       }
+      let path = '';
       if(avatar !== ''){
-        let path = 'public/resources/header/'+ Date.now() +'.jpg';
+        path = 'public/resources/header/'+ Date.now() +'.jpg';
         let base64 = avatar.replace(/^data:image\/\w+;base64,/, "");
         let dataBuffer = new Buffer(base64, 'base64');
         console.log('dataBuffer是否是Buffer对象：'+Buffer.isBuffer(dataBuffer));
@@ -206,7 +207,7 @@ module.exports = [
         result.data.name = name;
         result.data.gender = gender;
         result.data.signature = signature;
-        result.data.avatar = avatar===''? '': path;
+        result.data.avatar = path;
       }).catch((err) => {
         console.error('用户信息更新失败');
         console.log(err);

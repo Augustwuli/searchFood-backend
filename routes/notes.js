@@ -1,4 +1,6 @@
 // routes/notes.js
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 const Joi = require('joi');
 const fs = require('fs');
 const GROUP_NAME = 'notes';
@@ -8,8 +10,9 @@ const { paginationDefine } = require('../utils/router-helper');
 module.exports = [
   {
     method: 'GET',
-    path: `/${GROUP_NAME}/list`,
+    path: `/${GROUP_NAME}/list/{cityName}`,
     handler: async (request, reply) => {
+      const { cityName } = request.params;
       let result = {
         success: false,
         data: {
@@ -20,6 +23,11 @@ module.exports = [
       };
       await models.notes.findAndCountAll({
         attributes: ['id', 'auth_id', 'title', 'thumb_url', 'read_num', 'star_num', 'comment_num'],
+        where:{
+          title: {
+            [Op.like]: `%${cityName}%`,
+          }
+        },
         limit: request.query.limit,
         offset: (request.query.page - 1) * request.query.limit,
       }).then((notes) => {
@@ -34,6 +42,9 @@ module.exports = [
     },
     config: {
       validate :{
+        params: {
+          cityName: Joi.string().required(),
+        },
         query: {
           ...paginationDefine
         }
@@ -210,5 +221,51 @@ module.exports = [
       description: '增加笔记阅读量',
       auth: false
     },
+  },
+  {
+    method: 'GET',
+    path: `/${GROUP_NAME}/search/{keyword}`,
+    handler: async (request, reply) => {
+      const { keyword } = request.params;
+      let result = {
+        success: false,
+        data: {
+          notes: [],
+          count: 0
+        },
+        statu: 0
+      };
+      await models.notes.findAndCountAll({
+        attributes: ['id', 'auth_id', 'title', 'thumb_url', 'read_num', 'star_num', 'comment_num'],
+        where:{
+          title: {
+            [Op.like]: `%${keyword}%`,
+          }
+        },
+        limit: request.query.limit,
+        offset: (request.query.page - 1) * request.query.limit,
+      }).then((notes) => {
+        result.success = true;
+        result.data.notes = notes.rows;
+        result.data.count = notes.count;
+      }).catch((err) => {
+        console.error('标签查询失败');
+        console.log(err)
+      })
+      reply(result)
+    },
+    config: {
+      validate :{
+        params: {
+          keyword: Joi.string().required(),
+        },
+        query: {
+          ...paginationDefine
+        }
+      },
+      tags: ['api', GROUP_NAME],
+      description: '按关键字查找',
+      auth: false,
+    }
   }
 ]
