@@ -267,5 +267,51 @@ module.exports = [
       description: '按关键字查找',
       auth: false,
     }
+  },
+  {
+    method: 'GET',
+    path: `/${GROUP_NAME}/sort/{sortId}`,
+    handler: async (request, reply) => {
+      const { sortId } = request.params;
+      let result = {
+        success: false,
+        data: {
+          notes: [],
+          count: 0
+        },
+        statu: 0
+      };
+      await models.notes.findAndCountAll({
+        attributes: ['id', 'auth_id', 'title', 'thumb_url', 'read_num', 'star_num', 'comment_num'],
+        where:{
+          labels: {
+            [Op.like]: `%${sortId}%`,
+          }
+        },
+        limit: request.query.limit,
+        offset: (request.query.page - 1) * request.query.limit,
+      }).then((notes) => {
+        result.success = true;
+        result.data.notes = notes.rows;
+        result.data.count = notes.count;
+      }).catch((err) => {
+        console.error('标签查询失败');
+        console.log(err)
+      })
+      reply(result)
+    },
+    config: {
+      validate :{
+        params: {
+          sortId: Joi.string().required(),
+        },
+        query: {
+          ...paginationDefine
+        }
+      },
+      tags: ['api', GROUP_NAME],
+      description: '按分类查找',
+      auth: false,
+    }
   }
 ]
