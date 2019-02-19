@@ -313,5 +313,55 @@ module.exports = [
       description: '按分类查找',
       auth: false,
     }
+  },
+  {
+    method: 'POST',
+    path: `/${GROUP_NAME}/star`,
+    handler: async (request, reply) => {
+      let userId = request.auth.credentials.userId;
+      let { noteId ,star } = request.payload;
+      let result = {
+        success: false,
+        statu: 0
+      }
+      if(star === true){
+        await models.stars.upsert({
+          note_id:noteId,
+          auth_id: userId,
+        }).then((star) => {
+          result.success = true;
+          result.statu = 1;
+          console.log(star)
+        }).catch((err) => {
+          console.log('收藏失败')
+          console.log(err);
+        })
+      }else{
+        await models.stars.destroy({
+          where: {
+            note_id: noteId,
+            auth_id: userId
+          }
+        }).then((star) => {
+          result.success = true;
+          result.statu = 1;
+          console.log(star)
+        }).catch((err) => {
+          console.log('删除收藏失败')
+          console.log(err);
+        })  
+      }
+      reply(result);
+    },
+    config: {
+      validate :{
+        payload: {
+          noteId: Joi.number().required(),
+          star: Joi.boolean().required()
+        },
+      },
+      tags: ['api', GROUP_NAME],
+      description: '收藏笔记',
+    }
   }
 ]
