@@ -127,6 +127,7 @@ module.exports = [
     method: 'GET',
     path: `/${GROUP_NAME}/{noteId}`,
     handler: async (request, reply) => {
+      let userId = request.auth.credentials.userId;
       let result = {
         success: false,
         data: {
@@ -155,6 +156,12 @@ module.exports = [
         result.data.detail.content = note.get('content');
         result.data.detail.star_num = note.get('star_num');
         result.data.detail.comment_num = note.get('comment');
+      
+        let info = `\r\n${noteId},${userId},click`;
+        fs.appendFile('./logs/user.csv', info,function(err){
+          if(err) console.log(`追加操作失败${err}`);
+          else console.log('追加操作成功');
+        });
       }).catch((err) => {
         console.log('笔记内容查找失败');
         console.log(err);
@@ -181,7 +188,6 @@ module.exports = [
       },
       tags: ['api', GROUP_NAME],
       description: '查找笔记内容',
-      auth: false
     }
   },
   {
@@ -331,6 +337,11 @@ module.exports = [
         }).then((star) => {
           result.success = true;
           result.statu = 1;
+          let info = `\r\n${noteId},${userId},star`;
+          fs.appendFile('./logs/user.csv', info,function(err){
+            if(err) console.log(`追加操作失败${err}`);
+            else console.log('追加操作成功');
+          });
           console.log(star)
         }).catch((err) => {
           console.log('收藏失败')
