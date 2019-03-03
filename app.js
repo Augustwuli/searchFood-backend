@@ -8,6 +8,7 @@ const hapiAuthJWT2 = require('hapi-auth-jwt2');
 const pluginHapiSwagger = require('./plugins/hapi-swagger');
 const pluginHapiPagination = require('./plugins/hapi-pagination');
 const pluginHapiAuthJWT2 = require('./plugins/hapi-auth-jwt2');
+// const pluginHapiGood = require('./plugins/hapi-good');
 const order = require('./routes/order');
 const notes = require('./routes/notes');
 const users = require('./routes/users');
@@ -29,6 +30,7 @@ const init = async () => {
     pluginHapiPagination,
     hapiAuthJWT2,
     inert,
+    // pluginHapiGood
   ]);
   pluginHapiAuthJWT2(server);
   
